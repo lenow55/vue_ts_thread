@@ -2,9 +2,6 @@ onmessage = function (e) {
   const num = e.data;
   console.log("worker");
   let temp = 0;
-  while (temp < 9999999999) {
-    temp++;
-  }
   if (Number.isInteger(parseInt(num))) {
     while (temp < 9999999999) {
       temp++;
@@ -15,3 +12,5 @@ onmessage = function (e) {
     throw new Error("Is not a number");
   }
 };
+
+export {};
