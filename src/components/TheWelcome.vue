@@ -1,93 +1,96 @@
 <script setup lang="ts">
-import WelcomeItem from "./WelcomeItem.vue";
-import DocumentationIcon from "./icons/IconDocumentation.vue";
-import ToolingIcon from "./icons/IconTooling.vue";
-import EcosystemIcon from "./icons/IconEcosystem.vue";
-import CommunityIcon from "./icons/IconCommunity.vue";
-import SupportIcon from "./icons/IconSupport.vue";
+import { ref } from "vue";
+import worker from "@/workers/index";
+
+// let props = defineProps<{}>();
+
+const counter1 = ref(0);
+const counter2 = ref(0);
+function incrise_c1() {
+  const worker: Worker = new Worker("./count_worker.ts");
+  console.log(worker);
+  worker.postMessage(counter1.value);
+  worker.onmessage = function (res) {
+    counter1.value = res.data;
+  };
+}
+
+function incrise_c2() {
+  const worker: Worker = new Worker("./count_worker.ts", {
+    type: "module",
+  });
+  worker.postMessage(counter2.value);
+  worker.onmessage = function (res) {
+    counter2.value = res.data;
+  };
+  console.log(2);
+}
 </script>
 
 <template>
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Documentation</template>
-
-    Vue’s
-    <a target="_blank" href="https://vuejs.org/">official documentation</a>
-    provides you with all information you need to get started.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <ToolingIcon />
-    </template>
-    <template #heading>Tooling</template>
-
-    This project is served and bundled with
-    <a href="https://vitejs.dev/guide/features.html" target="_self">Vite</a>.
-    The recommended IDE setup is
-    <a href="https://code.visualstudio.com/" target="_blank">VSCode</a> +
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>.
-    If you need to test your components and web pages, check out
-    <a href="https://www.cypress.io/" target="_blank">Cypress</a> and
-    <a
-      href="https://docs.cypress.io/guides/component-testing/introduction"
-      target="_blank"
-      >Cypress Component Testing</a
-    >.
-
-    <br />
-
-    More instructions are available in <code>README.md</code>.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <EcosystemIcon />
-    </template>
-    <template #heading>Ecosystem</template>
-
-    Get official tools and libraries for your project:
-    <a target="_blank" href="https://pinia.vuejs.org/">Pinia</a>,
-    <a target="_blank" href="https://router.vuejs.org/">Vue Router</a>,
-    <a target="_blank" href="https://test-utils.vuejs.org/">Vue Test Utils</a>,
-    and
-    <a target="_blank" href="https://github.com/vuejs/devtools">Vue Dev Tools</a
-    >. If you need more resources, we suggest paying
-    <a target="_blank" href="https://github.com/vuejs/awesome-vue"
-      >Awesome Vue</a
-    >
-    a visit.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <CommunityIcon />
-    </template>
-    <template #heading>Community</template>
-
-    Got stuck? Ask your question on
-    <a target="_blank" href="https://chat.vuejs.org">Vue Land</a>, our official
-    Discord server, or
-    <a target="_blank" href="https://stackoverflow.com/questions/tagged/vue.js"
-      >StackOverflow</a
-    >. You should also subscribe to
-    <a target="_blank" href="https://news.vuejs.org">our mailing list</a> and
-    follow the official
-    <a target="_blank" href="https://twitter.com/vuejs">@vuejs</a>
-    twitter account for latest news in the Vue world.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <SupportIcon />
-    </template>
-    <template #heading>Support Vue</template>
-
-    As an independent project, Vue relies on community backing for its
-    sustainability. You can help us by
-    <a target="_blank" href="https://vuejs.org/sponsor/">becoming a sponsor</a>.
-  </WelcomeItem>
+  <div class="app">
+    <header class="left">
+      <div class="title">
+        <h1>Тестовый сайт с воркером</h1>
+      </div>
+      <div class="order">
+        <button @click="incrise_c1()">Incrise counter1</button>
+        <button @click="incrise_c2()">Incrise counter2</button>
+      </div>
+      <div class="result">
+        <h2>
+          Результат счётчика 1 <br />
+          {{ counter1 }}
+        </h2>
+        <h2>
+          Результат счётчика 2 <br />
+          {{ counter2 }}
+        </h2>
+      </div>
+    </header>
+  </div>
 </template>
+
+<style>
+button {
+  margin: 0 10px;
+  color: #1195c9;
+  border: 3px solid #1195c9;
+  background: #d5f0ff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.order {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .order {
+    flex-direction: row;
+  }
+  .result {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    text-align: center;
+  }
+  .app {
+    height: 100%;
+  }
+  .left {
+    height: 100%;
+    justify-content: space-evenly;
+  }
+}
+</style>
