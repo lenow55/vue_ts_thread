@@ -1,28 +1,37 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import worker from "@/workers/index";
 
 // let props = defineProps<{}>();
 
 const counter1 = ref(0);
 const counter2 = ref(0);
 function incrise_c1() {
-  const worker: Worker = new Worker("./count_worker.ts");
+  const worker: Worker = new Worker(
+    new URL("../workers/count_worker.ts", import.meta.url),
+    {
+      type: "module",
+    }
+  );
   console.log(worker);
-  worker.postMessage(counter1.value);
-  worker.onmessage = function (res) {
+  worker.onmessage = function (res: any) {
     counter1.value = res.data;
+    worker.terminate();
   };
+  worker.postMessage(counter1.value);
 }
 
 function incrise_c2() {
-  const worker: Worker = new Worker("./count_worker.ts", {
-    type: "module",
-  });
-  worker.postMessage(counter2.value);
+  const worker: Worker = new Worker(
+    new URL("../workers/count_worker.ts", import.meta.url),
+    {
+      type: "module",
+    }
+  );
   worker.onmessage = function (res) {
     counter2.value = res.data;
+    worker.terminate();
   };
+  worker.postMessage(counter2.value);
   console.log(2);
 }
 </script>
